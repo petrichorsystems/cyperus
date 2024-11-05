@@ -1,0 +1,6 @@
+[submodule "modules/cyperus-server"]
+	path = modules/cyperus-server
+	url = git@github.com:petrichorsystems/cyperus-server.git
+[submodule "modules/baton"]
+	path = modules/baton
+	url = git@github.com:petrichorsystems/baton.git
