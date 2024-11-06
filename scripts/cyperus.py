@@ -44,17 +44,20 @@ class Cyperus:
         'cyperus-server': {
             'pid': None,
             'thread': None,
-            'exc': None
+            'exc': None,
+            'running': False
         },
         'websocket-relay': {
             'pid': None,
             'thread': None,
-            'exc': None
+            'exc': None,
+            'running': False
         },
         'presets-loader': {
             'pid': None,
             'thread': None,
-            'exc': None
+            'exc': None,
+            'running': False
         }
     }
 
@@ -69,7 +72,8 @@ class Cyperus:
                                server_bitdepth,
                                server_recv_port,
                                server_send_port,
-                               server_period):        
+                               server_period):
+        self._child_processes['cyperus-server']['running'] = True
         try:
             proc = subprocess.Popen(
                 [
@@ -94,7 +98,7 @@ class Cyperus:
         except Exception as exc:
             self._child_processes['cyperus-server']['exc'] = exc
             print('exc', exc)
-            return
+        self._child_processes['cyperus-server']['running'] = False        
         
     def _run_cyperus_server(self,
                              server_input_channels=4,
@@ -103,7 +107,7 @@ class Cyperus:
                              server_recv_port=7500,
                              server_send_port=7400,
                              server_period=256):
-
+        self._child_processes['websocket-relay']['running'] = True
         args = (server_input_channels,
                 server_output_channels,
                 server_bitdepth,
@@ -112,7 +116,8 @@ class Cyperus:
                 server_period)
         self._child_processes['cyperus-server']['thread'] = threading.Thread(
             target=self._cyperus_server_thread,
-            args=args)
+            args=args,
+            daemon=True)
         self._child_processes['cyperus-server']['thread'].start()
 
     def _websocket_relay_thread(self,
@@ -138,7 +143,7 @@ class Cyperus:
         except Exception as exc:
             self._child_processes['websocket-relay']['exc'] = exc
             print('exc', exc)
-            return
+        self._child_processes['websocket-relay']['running'] = False
         
     def _run_websocket_relay(self,
                              server_recv_port=7400,
@@ -148,7 +153,8 @@ class Cyperus:
                 server_send_port)
         self._child_processes['websocket-relay']['thread'] = threading.Thread(
             target=self._websocket_relay_thread,
-            args=args)
+            args=args,
+            daemon=True)
         self._child_processes['websocket-relay']['thread'].start()
 
         
@@ -179,11 +185,13 @@ class Cyperus:
         self._run_websocket_relay(relay_recv_port,
                                   relay_send_port)
         while(True):
-            if self._child_processes['cyperus-server']['exc']:
-                raise(self._child_processes['cyperus-server']['exc'])
-            if self._child_processes['websocket-relay']['exc']:
-                raise(self._child_processes['websocket-relay']['exc'])            
             time.sleep(0.01)
+            for process_name in ('cyperus-server', 'websocket-relay',):
+                if self._child_processes[process_name]['exc']:
+                    raise(self._child_processes[process_name]['exc'])
+                if self._child_processes[process_name]['running'] == False:
+                    raise Exception(f"{process_name} process died, cyperus service is aborting..")
+                    exit(0)
 
 
 if __name__ == "__main__":
