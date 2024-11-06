@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # activate python virtual environment
-python3 cyperus.py "$@"
+python3 scripts/cyperus.py "$@"
