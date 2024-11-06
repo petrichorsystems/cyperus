@@ -1,4 +1,3 @@
 #!/bin/bash
 
-# activate python virtual environment
 source env/pyvenv/bin/activate && python3 scripts/cyperus.py "$@"
