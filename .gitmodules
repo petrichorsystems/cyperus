@@ -4,3 +4,6 @@
 [submodule "modules/baton"]
 	path = modules/baton
 	url = git@github.com:petrichorsystems/baton.git
+[submodule "modules/pycyperus"]
+	path = modules/pycyperus
+	url = git@github.com:petrichorsystems/pycyperus.git
