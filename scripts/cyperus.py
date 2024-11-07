@@ -84,7 +84,7 @@ class Cyperus:
                 '-sp', str(server_send_port),
                 '-p', str(server_period)
             ]
-            print(f"launching process: {' '.join(cmd)}")
+            print(f"launching cyperus-server: {' '.join(cmd)}")
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -131,7 +131,7 @@ class Cyperus:
                 '--recvport', str(relay_recv_port),
                 '--sendport', str(relay_send_port)
             ]
-            print(f"launching process: {' '.join(cmd)}")            
+            print(f"launching websocket-relay: {' '.join(cmd)}")            
             proc = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
