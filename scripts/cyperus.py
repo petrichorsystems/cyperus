@@ -75,16 +75,18 @@ class Cyperus:
                                server_period):
         self._child_processes['cyperus-server']['running'] = True
         try:
+            cmd = [
+                'modules/cyperus-server/build/cyperus-server',
+                '-i', str(server_input_channels),
+                '-o', str(server_output_channels),
+                '-bd', str(server_bitdepth),
+                '-rp', str(server_recv_port),
+                '-sp', str(server_send_port),
+                '-p', str(server_period)
+            ]
+            print(f"launching process: {' '.join(cmd)}")
             proc = subprocess.Popen(
-                [
-                    'modules/cyperus-server/build/cyperus-server',
-                    '-i', str(server_input_channels),
-                    '-o', str(server_output_channels),
-                    '-bd', str(server_bitdepth),
-                    '-rp', str(server_recv_port),
-                    '-sp', str(server_send_port),
-                    '-p', str(server_period)
-                ],
+                cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 preexec_fn=_set_pdeathsig(signal.SIGTERM)
             )
@@ -124,12 +126,14 @@ class Cyperus:
                                 relay_recv_port,
                                 relay_send_port):        
         try:
+            cmd = [
+                'python3', 'modules/baton/baton.py',
+                '--recvport', str(relay_recv_port),
+                '--sendport', str(relay_send_port)
+            ]
+            print(f"launching process: {' '.join(cmd)}")            
             proc = subprocess.Popen(
-                [
-                    'python3', 'modules/baton/baton.py',
-                    '--recvport', str(relay_recv_port),
-                    '--sendport', str(relay_send_port)
-                ],
+                cmd,
                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 preexec_fn=_set_pdeathsig(signal.SIGTERM)
             )
